@@ -11,58 +11,63 @@
 
 #include <Arduino.h>
 
-namespace STSRegisters
-{
-    byte const FIRMWARE_MAJOR          = 0x00;
-    byte const FIRMWARE_MINOR          = 0x01;
-    byte const SERVO_MAJOR             = 0x03;
-    byte const SERVO_MINOR             = 0x04;
-    byte const ID                      = 0x05;
-    byte const BAUDRATE                = 0x06;
-    byte const RESPONSE_DELAY          = 0x07;
-    byte const RESPONSE_STATUS_LEVEL   = 0x08;
-    byte const MINIMUM_ANGLE           = 0x09;
-    byte const MAXIMUM_ANGLE           = 0x0B;
-    byte const MAXIMUM_TEMPERATURE     = 0x0D;
-    byte const MAXIMUM_VOLTAGE         = 0x0E;
-    byte const MINIMUM_VOLTAGE         = 0x0F;
-    byte const MAXIMUM_TORQUE          = 0x10;
-    byte const UNLOADING_CONDITION     = 0x13;
-    byte const LED_ALARM_CONDITION     = 0x14;
-    byte const POS_PROPORTIONAL_GAIN   = 0x15;
-    byte const POS_DERIVATIVE_GAIN     = 0x16;
-    byte const POS_INTEGRAL_GAIN       = 0x17;
-    byte const MINIMUM_STARTUP_FORCE   = 0x18;
-    byte const CK_INSENSITIVE_AREA     = 0x1A;
-    byte const CCK_INSENSITIVE_AREA    = 0x1B;
-    byte const CURRENT_PROTECTION_TH   = 0x1C;
-    byte const ANGULAR_RESOLUTION      = 0x1E;
-    byte const POSITION_CORRECTION     = 0x1F;
-    byte const OPERATION_MODE          = 0x21;
-    byte const TORQUE_PROTECTION_TH    = 0x22;
-    byte const TORQUE_PROTECTION_TIME  = 0x23;
-    byte const OVERLOAD_TORQUE         = 0x24;
-    byte const SPEED_PROPORTIONAL_GAIN = 0x25;
-    byte const OVERCURRENT_TIME        = 0x26;
-    byte const SPEED_INTEGRAL_GAIN     = 0x27;
-    byte const TORQUE_SWITCH           = 0x28;
-    byte const TARGET_ACCELERATION     = 0x29;
-    byte const TARGET_POSITION         = 0x2A;
-    byte const RUNNING_TIME            = 0x2C;
-    byte const RUNNING_SPEED           = 0x2E;
-    byte const TORQUE_LIMIT            = 0x30;
-    byte const WRITE_LOCK              = 0x37;
-    byte const CURRENT_POSITION        = 0x38;
-    byte const CURRENT_SPEED           = 0x3A;
-    byte const CURRENT_DRIVE_VOLTAGE   = 0x3C;
-    byte const CURRENT_VOLTAGE         = 0x3E;
-    byte const CURRENT_TEMPERATURE     = 0x3F;
-    byte const ASYNCHRONOUS_WRITE_ST   = 0x40;
-    byte const STATUS                  = 0x41;
-    byte const MOVING_STATUS           = 0x42;
-    byte const CURRENT_CURRENT         = 0x45;
-};
+    namespace STS::registers
+    {
+        byte const FIRMWARE_MAJOR          = 0x00;
+        byte const FIRMWARE_MINOR          = 0x01;
+        byte const SERVO_MAJOR             = 0x03;
+        byte const SERVO_MINOR             = 0x04;
+        byte const ID                      = 0x05;
+        byte const BAUDRATE                = 0x06;
+        byte const RESPONSE_DELAY          = 0x07;
+        byte const RESPONSE_STATUS_LEVEL   = 0x08;
+        byte const MINIMUM_ANGLE           = 0x09;
+        byte const MAXIMUM_ANGLE           = 0x0B;
+        byte const MAXIMUM_TEMPERATURE     = 0x0D;
+        byte const MAXIMUM_VOLTAGE         = 0x0E;
+        byte const MINIMUM_VOLTAGE         = 0x0F;
+        byte const MAXIMUM_TORQUE          = 0x10;
+        byte const UNLOADING_CONDITION     = 0x13;
+        byte const LED_ALARM_CONDITION     = 0x14;
+        byte const POS_PROPORTIONAL_GAIN   = 0x15;
+        byte const POS_DERIVATIVE_GAIN     = 0x16;
+        byte const POS_INTEGRAL_GAIN       = 0x17;
+        byte const MINIMUM_STARTUP_FORCE   = 0x18;
+        byte const CK_INSENSITIVE_AREA     = 0x1A;
+        byte const CCK_INSENSITIVE_AREA    = 0x1B;
+        byte const CURRENT_PROTECTION_TH   = 0x1C;
+        byte const ANGULAR_RESOLUTION      = 0x1E;
+        byte const POSITION_CORRECTION     = 0x1F;
+        byte const OPERATION_MODE          = 0x21;
+        byte const TORQUE_PROTECTION_TH    = 0x22;
+        byte const TORQUE_PROTECTION_TIME  = 0x23;
+        byte const OVERLOAD_TORQUE         = 0x24;
+        byte const SPEED_PROPORTIONAL_GAIN = 0x25;
+        byte const OVERCURRENT_TIME        = 0x26;
+        byte const SPEED_INTEGRAL_GAIN     = 0x27;
+        byte const TORQUE_SWITCH           = 0x28;
+        byte const TARGET_ACCELERATION     = 0x29;
+        byte const TARGET_POSITION         = 0x2A;
+        byte const RUNNING_TIME            = 0x2C;
+        byte const RUNNING_SPEED           = 0x2E;
+        byte const TORQUE_LIMIT            = 0x30;
+        byte const WRITE_LOCK              = 0x37;
+        byte const CURRENT_POSITION        = 0x38;
+        byte const CURRENT_SPEED           = 0x3A;
+        byte const CURRENT_DRIVE_VOLTAGE   = 0x3C;
+        byte const CURRENT_VOLTAGE         = 0x3E;
+        byte const CURRENT_TEMPERATURE     = 0x3F;
+        byte const ASYNCHRONOUS_WRITE_ST   = 0x40;
+        byte const STATUS                  = 0x41;
+        byte const MOVING_STATUS           = 0x42;
+        byte const CURRENT_CURRENT         = 0x45;
+    };
 
+    namespace STS::mode
+    {
+        byte const POSITION   = 0x00;
+        byte const CONTINUOUS = 0x01;
+    }
 /// \brief Driver for STS servos, using UART
 class STSServoDriver
 {
@@ -76,7 +81,7 @@ class STSServoDriver
         /// \param serialPort Serial port, default is Serial
         /// \param baudRate Baud rate, default 1Mbps
         /// \returns  True on success (at least one servo responds to ping)
-        bool init(byte const& dirPin, HardwareSerial *serialPort = nullptr, long const& baudRate = 1000000);
+        bool init(byte const& dirPin, HardwareSerial *serialPort = nullptr);
 
         /// \brief Ping servo
         /// \param[in] servoId ID of the servo
@@ -131,7 +136,9 @@ class STSServoDriver
         /// \param[in] velocity Target velocity, in counts/s.
         /// \param[in] asynchronous If set, write is asynchronous (ACTION must be send to activate)
         /// \return True on success, false otherwise.
-        bool setTargetVelocity(byte const& servoId, int const& velocity, bool const& asynchronous = false);
+        bool setTargetVelocity(byte const& servoId, int16_t const& velocity, bool const& asynchronous = false);
+
+        bool setTargetAcceleration(byte const& servoId, byte const& acceleration, bool const& asynchronous);
 
         /// \brief Trigger the action previously stored by an asynchronous write on all servos.
         /// \return True on success
@@ -171,7 +178,20 @@ class STSServoDriver
         /// \return Register value, 0 on failure.
         int16_t readTwoBytesRegister(byte const& servoId, byte const& registerId);
 
+        /// \brief set mode accordingly to POSITION, CONTINUOUS, STEPPER
+        /// \param[in] servoId ID of the servo
+        /// \param[in] mode::[POSITION, CONTINUOUS, STEPPER]
+        /// \return True if write was successful
+        bool setOperationMode(byte const& servoId, byte const& mode);
     private:
+
+        /// \brief convert to signed value in accordance to Feetech convention
+        /// bit 15 is the sign bit : 0: positive - 1 : negative
+        /// bit [0-14] is the absolute value. -10 = 0x800A (and not 0xFFF6)
+        /// \param[in] servoId ID of the servo
+        /// \param[in] registerId LSB register id.
+        /// \return Register value, 0 on failure.
+        int16_t convertToSigned(int val);
 
         /// \brief Clear internal device error.
         // void clearError();
@@ -186,6 +206,7 @@ class STSServoDriver
                         byte const& commandID,
                         byte const& paramLength,
                         byte *parameters);
+
 
         /// \brief Recieve a message from a given servo.
         /// \param[in] servoId ID of the servo

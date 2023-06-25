@@ -1,5 +1,7 @@
 #include "STSServoDriver.h"
 
+// extern HardwareSerial Serial;
+
 namespace instruction
 {
     byte const PING      = 0x01;
@@ -11,6 +13,14 @@ namespace instruction
     byte const RESET     = 0x06;
 };
 
+// #define DBG
+#if defined(DBG)
+#   define DBPRINTLN(a,b) {Serial.print(a);Serial.print(":");Serial.println(b);}
+#   define DBPRINTLN(a,b,FORMAT) {Serial.print(a,FORMAT);Serial.print(":");Serial.println(b,FORMAT);}
+#else
+#   define DBPRINTLN(a,b) {}
+#   define DBPRINTLN(a,b,FORMAT) {}
+#endif
 
 STSServoDriver::STSServoDriver():
     dirPin_(0)
@@ -18,7 +28,7 @@ STSServoDriver::STSServoDriver():
 }
 
 
-bool STSServoDriver::init(byte const& dirPin, HardwareSerial *serialPort,long const& baudRate)
+bool STSServoDriver::init(byte const& dirPin, HardwareSerial *serialPort)
 {
     #ifdef SERIAL_H
     if (serialPort == nullptr)
@@ -26,7 +36,6 @@ bool STSServoDriver::init(byte const& dirPin, HardwareSerial *serialPort,long co
     #endif
     // Open port
     port_ = serialPort;
-    port_->begin(baudRate);
     dirPin_ = dirPin;
     pinMode(dirPin_, OUTPUT);
 
@@ -160,11 +169,16 @@ int STSServoDriver::sendMessage(byte const& servoId,
     }
     message[5 + paramLength] = ~checksum;
 
+#if defined(DBG)
+    for(int i = 0; i < 6+ paramLength ; i++ ) {
+        DBPRINTLN(i,message[i],HEX);
+    }
+#endif
     digitalWrite(dirPin_, HIGH);
     int ret = port_->write(message, 6 + paramLength);
     digitalWrite(dirPin_, LOW);
     // Give time for the message to be processed.
-    delayMicroseconds(200);
+    delayMicroseconds(500);
     return ret;
 }
 
@@ -203,6 +217,7 @@ bool STSServoDriver::writeTwoBytesRegister(byte const& servoId,
 {
     byte params[2] = {static_cast<unsigned char>(value & 0xFF),
                                static_cast<unsigned char>((value >> 8) & 0xFF)};
+
     return writeRegisters(servoId, registerId, 2, params, asynchronous);
 }
 
@@ -247,6 +262,7 @@ int STSServoDriver::readRegisters(byte const& servoId,
 
     for (int i = 0; i < readLength; i++)
         outputBuffer[i] = result[i + 1];
+    delayMicroseconds(500);
     return 0;
 }
 
