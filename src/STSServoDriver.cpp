@@ -55,6 +55,11 @@ bool STSServoDriver::ping(byte const& servoId)
     return response[0] == 0x00;
 }
 
+int16_t STSServoDriver::convertToSigned(int val) {
+    if(val>0) return val;
+    val = 0x8000 | (-val & 0x7FFF);
+    return int16_t(val);
+}
 
 bool STSServoDriver::setId(byte const& oldServoId, byte const& newServoId)
 {
@@ -63,13 +68,13 @@ bool STSServoDriver::setId(byte const& oldServoId, byte const& newServoId)
     if (ping(newServoId))
         return false; // address taken
     // Unlock EEPROM
-    if (!writeRegister(oldServoId, STSRegisters::WRITE_LOCK, 0))
+    if (!writeRegister(oldServoId, STS::registers::WRITE_LOCK, 0))
         return false;
     // Write new ID
-    if (!writeRegister(oldServoId, STSRegisters::ID, newServoId))
+    if (!writeRegister(oldServoId, STS::registers::ID, newServoId))
         return false;
     // Lock EEPROM
-    if (!writeRegister(newServoId, STSRegisters::WRITE_LOCK, 1))
+    if (!writeRegister(newServoId, STS::registers::WRITE_LOCK, 1))
       return false;
     return ping(newServoId);
 }
@@ -77,48 +82,57 @@ bool STSServoDriver::setId(byte const& oldServoId, byte const& newServoId)
 
 int STSServoDriver::getCurrentPosition(byte const& servoId)
 {
-    int16_t pos = readTwoBytesRegister(servoId, STSRegisters::CURRENT_POSITION);
+    int16_t pos = readTwoBytesRegister(servoId, STS::registers::CURRENT_POSITION);
     return pos;
 }
 
 
 int STSServoDriver::getCurrentSpeed(byte const& servoId)
 {
-    int16_t vel = readTwoBytesRegister(servoId, STSRegisters::CURRENT_SPEED);
+    int16_t vel = readTwoBytesRegister(servoId, STS::registers::CURRENT_SPEED);
     return vel;
 }
 
 
 int STSServoDriver::getCurrentTemperature(byte const& servoId)
 {
-    return readTwoBytesRegister(servoId, STSRegisters::CURRENT_TEMPERATURE);
+    return readTwoBytesRegister(servoId, STS::registers::CURRENT_TEMPERATURE);
 }
 
 
 int STSServoDriver::getCurrentCurrent(byte const& servoId)
 {
-    int16_t current = readTwoBytesRegister(servoId, STSRegisters::CURRENT_CURRENT);
+    int16_t current = readTwoBytesRegister(servoId, STS::registers::CURRENT_CURRENT);
     return current * 0.0065;
 }
 
 bool STSServoDriver::isMoving(byte const& servoId)
 {
-    byte const result = readRegister(servoId, STSRegisters::MOVING_STATUS);
+    byte const result = readRegister(servoId, STS::registers::MOVING_STATUS);
     return result > 0;
 }
 
 
 bool STSServoDriver::setTargetPosition(byte const& servoId, int const& position, bool const& asynchronous)
 {
-    return writeTwoBytesRegister(servoId, STSRegisters::TARGET_POSITION, position, asynchronous);
+    return writeTwoBytesRegister(servoId, STS::registers::TARGET_POSITION, position, asynchronous);
 }
 
 
-bool STSServoDriver::setTargetVelocity(byte const& servoId, int const& velocity, bool const& asynchronous)
+bool STSServoDriver::setTargetVelocity(byte const& servoId, int16_t const& velocity, bool const& asynchronous)
 {
-    return writeTwoBytesRegister(servoId, STSRegisters::RUNNING_SPEED, velocity, asynchronous);
+    return writeTwoBytesRegister(servoId, STS::registers::RUNNING_SPEED, convertToSigned(velocity) , asynchronous);
 }
 
+bool STSServoDriver::setTargetAcceleration(byte const& servoId, byte const& acceleration, bool const& asynchronous)
+{
+    return writeRegister(servoId, STS::registers::TARGET_ACCELERATION, acceleration, asynchronous);
+}
+
+bool STSServoDriver::setOperationMode(byte const& servoId, byte const& mode)
+{
+    return writeRegister(servoId, STS::registers::OPERATION_MODE, mode, false);
+}
 
 bool STSServoDriver::trigerAction()
 {
