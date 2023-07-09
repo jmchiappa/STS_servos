@@ -15,10 +15,12 @@ namespace instruction
 
 // #define DBG
 #if defined(DBG)
-#   define DBPRINTLN(a,b) {Serial.print(a);Serial.print(":");Serial.println(b);}
-#   define DBPRINTLN(a,b,FORMAT) {Serial.print(a,FORMAT);Serial.print(":");Serial.println(b,FORMAT);}
+#   define DBPRINT(a,b) {Serial.print(a);Serial.print(":");Serial.print(b);}
+#   define DBPRINT1LN(a) {Serial.println(a);}
+#   define DBPRINTLN(a,b,FORMAT) {Serial.print(a);Serial.print(":");Serial.println(b,FORMAT);}
 #else
-#   define DBPRINTLN(a,b) {}
+#   define DBPRINT(a,b) {}
+#   define DBPRINT1LN(a,b) {}
 #   define DBPRINTLN(a,b,FORMAT) {}
 #endif
 
@@ -171,12 +173,14 @@ int STSServoDriver::sendMessage(byte const& servoId,
 
 #if defined(DBG)
     for(int i = 0; i < 6+ paramLength ; i++ ) {
+        DBPRINT("sendMesssage","servo id : ");
         DBPRINTLN(i,message[i],HEX);
     }
 #endif
-    digitalWrite(dirPin_, HIGH);
+    // digitalWrite(dirPin_, HIGH);
     int ret = port_->write(message, 6 + paramLength);
-    digitalWrite(dirPin_, LOW);
+    port_->enableHalfDuplexRx();
+    // digitalWrite(dirPin_, LOW);
     // Give time for the message to be processed.
     delayMicroseconds(500);
     return ret;
@@ -270,9 +274,14 @@ int STSServoDriver::recieveMessage(byte const& servoId,
                                    byte const& readLength,
                                    byte *outputBuffer)
 {
-    digitalWrite(dirPin_, LOW);
+    // while(!port_->available()) {
+    //     DBPRINT1LN("waiting for receiving char...");
+    // }
+    // digitalWrite(dirPin_, LOW);
     byte result[readLength + 5];
     size_t rd = port_->readBytes(result, readLength + 5);
+
+    DBPRINTLN("receiveMessage",rd,DEC);
     if (rd != (unsigned short)(readLength + 5))
         return -1;
     // Check message integrity
