@@ -127,7 +127,7 @@ bool STSServoDriver::isMoving(byte const& servoId)
 
 bool STSServoDriver::setTargetPosition(byte const& servoId, int const& position, bool const& asynchronous)
 {
-    return writeTwoBytesRegister(servoId, STS::registers::TARGET_POSITION, position, asynchronous);
+    return writeTwoBytesRegister(servoId, STS::registers::TARGET_POSITION, convertToSigned(position), asynchronous);
 }
 
 
