@@ -39,7 +39,8 @@ bool STSServoDriver::init(byte const& dirPin, HardwareSerial *serialPort)
     // Open port
     port_ = serialPort;
     dirPin_ = dirPin;
-    pinMode(dirPin_, OUTPUT);
+    if(dirPin_ != NC)
+        pinMode(dirPin_, OUTPUT);
 
     // Test that a servo is present.
     for (byte i = 0; i < 0xFE; i++)
@@ -177,10 +178,12 @@ int STSServoDriver::sendMessage(byte const& servoId,
         DBPRINTLN(i,message[i],HEX);
     }
 #endif
-    // digitalWrite(dirPin_, HIGH);
+    if(dirPin_ != NC)
+        digitalWrite(dirPin_, HIGH);
     int ret = port_->write(message, 6 + paramLength);
     port_->enableHalfDuplexRx();
-    // digitalWrite(dirPin_, LOW);
+    if(dirPin_ != NC)
+        digitalWrite(dirPin_, LOW);
     // Give time for the message to be processed.
     delayMicroseconds(500);
     return ret;
@@ -277,7 +280,8 @@ int STSServoDriver::recieveMessage(byte const& servoId,
     // while(!port_->available()) {
     //     DBPRINT1LN("waiting for receiving char...");
     // }
-    // digitalWrite(dirPin_, LOW);
+    if(dirPin_ != NC)
+        digitalWrite(dirPin_, LOW);
     byte result[readLength + 5];
     size_t rd = port_->readBytes(result, readLength + 5);
 
