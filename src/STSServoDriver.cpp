@@ -37,6 +37,7 @@ bool STSServoDriver::init(byte const& dirPin, HardwareSerial *serialPort)
         serialPort = &Serial;
     #endif
     // set uart timeout to 10 ms
+    port_ = serialPort;
     port_->setTimeout(10);
     dirPin_ = dirPin;
     if(dirPin_ != NC)
