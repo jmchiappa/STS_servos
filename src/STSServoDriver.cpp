@@ -137,6 +137,16 @@ bool STSServoDriver::setTargetVelocity(byte const& servoId, int16_t const& veloc
     return writeTwoBytesRegister(servoId, STS::registers::RUNNING_SPEED, convertToSigned(velocity) , asynchronous);
 }
 
+bool STSServoDriver::setPositionCorrection(byte const& servoId, int16_t const& correction, bool const& asynchronous)
+{
+    if (correction > 0) {
+        return writeTwoBytesRegister(servoId, STS::registers::POSITION_CORRECTION, (0x7FFF & correction), asynchronous);
+    }
+    else {
+        return writeTwoBytesRegister(servoId, STS::registers::POSITION_CORRECTION, int16_t (0x8000 | ((-correction) & 0x7FFF)), asynchronous);
+    }
+}
+
 bool STSServoDriver::setTargetAcceleration(byte const& servoId, byte const& acceleration, bool const& asynchronous)
 {
     return writeRegister(servoId, STS::registers::TARGET_ACCELERATION, acceleration, asynchronous);

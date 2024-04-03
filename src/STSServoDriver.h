@@ -138,6 +138,8 @@ class STSServoDriver
         /// \return True on success, false otherwise.
         bool setTargetVelocity(byte const& servoId, int16_t const& velocity, bool const& asynchronous = false);
 
+        bool setPositionCorrection(byte const& servoId, int16_t const& correction, bool const& asynchronous);
+        
         bool setTargetAcceleration(byte const& servoId, byte const& acceleration, bool const& asynchronous);
 
         /// \brief Trigger the action previously stored by an asynchronous write on all servos.
