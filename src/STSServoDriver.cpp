@@ -70,7 +70,7 @@ bool STSServoDriver::ping(byte const& servoId)
 
 int16_t STSServoDriver::convertToSigned(int val) {
     if(val>0) return val;
-    val = 0x8000 | (-val & 0x7FFF);
+    val = 0x8000 | (abs(val) & 0x7FFF);
     return int16_t(val);
 }
 
@@ -141,9 +141,11 @@ bool STSServoDriver::setPositionCorrection(byte const& servoId, int16_t const& c
 {
     if (!writeRegister(servoId, STSRegisters::WRITE_LOCK, 0))
         return false;
+    
     // Write new position offset
-    if (!writeTwoBytesRegister(servoId, STSRegisters::POSITION_CORRECTION, correction))
+    if(!writeTwoBytesRegister(servoId, STS::registers::POSITION_CORRECTION, convertToSigned(correction), asynchronous))
         return false;
+
     // Lock EEPROM
     if (!writeRegister(servoId, STSRegisters::WRITE_LOCK, 1))
         return false;
