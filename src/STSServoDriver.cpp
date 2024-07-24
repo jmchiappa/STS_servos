@@ -139,7 +139,7 @@ bool STSServoDriver::setTargetVelocity(byte const& servoId, int16_t const& veloc
 
 bool STSServoDriver::setPositionCorrection(byte const& servoId, int16_t const& correction, bool const& asynchronous)
 {
-    if (!writeRegister(servoId, STSRegisters::WRITE_LOCK, 0))
+    if (!writeRegister(servoId, STS::registers::WRITE_LOCK, 0))
         return false;
     
     // Write new position offset
@@ -147,7 +147,7 @@ bool STSServoDriver::setPositionCorrection(byte const& servoId, int16_t const& c
         return false;
 
     // Lock EEPROM
-    if (!writeRegister(servoId, STSRegisters::WRITE_LOCK, 1))
+    if (!writeRegister(servoId, STS::registers::WRITE_LOCK, 1))
         return false;
     return true;
 }
