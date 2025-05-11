@@ -162,19 +162,19 @@ bool STSServoDriver::setOperationMode(byte const& servoId, byte const& mode)
     bool ret = writeRegister(servoId, STS::registers::OPERATION_MODE, mode, false);
     if( mode == STS::mode::STEPPER) {
         if(previousWorkMode != STS::mode::STEPPER) {
-            minAngle = readTwoBytesRegister(IdServoMoteur_,STS::registers::MINIMUM_ANGLE);
-            maxAngle = readTwoBytesRegister(IdServoMoteur_,STS::registers::MAXIMUM_ANGLE);
+            minAngle = readTwoBytesRegister(servoId,STS::registers::MINIMUM_ANGLE);
+            maxAngle = readTwoBytesRegister(servoId,STS::registers::MAXIMUM_ANGLE);
         }
-        writeTwoBytesRegister(IdServoMoteur_,STS::registers::MINIMUM_ANGLE,0,false);
-        writeTwoBytesRegister(IdServoMoteur_,STS::registers::MAXIMUM_ANGLE,0,false);
+        writeTwoBytesRegister(servoId,STS::registers::MINIMUM_ANGLE,0,false);
+        writeTwoBytesRegister(servoId,STS::registers::MAXIMUM_ANGLE,0,false);
     } else {
         if(previousWorkMode == STS::mode::STEPPER) {
-            writeTwoBytesRegister(IdServoMoteur_,STS::registers::MINIMUM_ANGLE,minAngle,false);
-            writeTwoBytesRegister(IdServoMoteur_,STS::registers::MAXIMUM_ANGLE,maxAngle,false);    
+            writeTwoBytesRegister(servoId,STS::registers::MINIMUM_ANGLE,minAngle,false);
+            writeTwoBytesRegister(servoId,STS::registers::MAXIMUM_ANGLE,maxAngle,false);    
         }
     }
     previousWorkMode = mode;
-    return ret
+    return ret;
 }
 
 bool STSServoDriver::trigerAction()
