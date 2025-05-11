@@ -67,6 +67,8 @@
     {
         byte const POSITION   = 0x00;
         byte const CONTINUOUS = 0x01;
+        byte const PWM        = 0x02;
+        byte const STEPPER    = 0x03;
     }
 /// \brief Driver for STS servos, using UART
 class STSServoDriver
@@ -249,5 +251,8 @@ class STSServoDriver
 
         HardwareSerial *port_;
         byte dirPin_;     ///< Direction pin number.
+        uint16_t minAngle = 0;
+        uint16_t maxAngle = 1;
+        uint8_t previousWorkMode = STS::mode::POSITION;
 };
 #endif

@@ -159,7 +159,22 @@ bool STSServoDriver::setTargetAcceleration(byte const& servoId, byte const& acce
 
 bool STSServoDriver::setOperationMode(byte const& servoId, byte const& mode)
 {
-    return writeRegister(servoId, STS::registers::OPERATION_MODE, mode, false);
+    bool ret = writeRegister(servoId, STS::registers::OPERATION_MODE, mode, false);
+    if( mode == STS::mode::STEPPER) {
+        if(previousWorkMode != STS::mode::STEPPER) {
+            minAngle = readTwoBytesRegister(IdServoMoteur_,STS::registers::MINIMUM_ANGLE);
+            maxAngle = readTwoBytesRegister(IdServoMoteur_,STS::registers::MAXIMUM_ANGLE);
+        }
+        writeTwoBytesRegister(IdServoMoteur_,STS::registers::MINIMUM_ANGLE,0,false);
+        writeTwoBytesRegister(IdServoMoteur_,STS::registers::MAXIMUM_ANGLE,0,false);
+    } else {
+        if(previousWorkMode == STS::mode::STEPPER) {
+            writeTwoBytesRegister(IdServoMoteur_,STS::registers::MINIMUM_ANGLE,minAngle,false);
+            writeTwoBytesRegister(IdServoMoteur_,STS::registers::MAXIMUM_ANGLE,maxAngle,false);    
+        }
+    }
+    previousWorkMode = mode;
+    return ret
 }
 
 bool STSServoDriver::trigerAction()
