@@ -74,6 +74,12 @@ int16_t STSServoDriver::convertToSigned(int val) {
     return int16_t(val);
 }
 
+int16_t STSServoDriver::convertFeetechToSigned(int val) {
+    if(val>0) return val;
+    val = - (val & 0x7FFF);
+    return int16_t(val);
+}
+
 bool STSServoDriver::setId(byte const& oldServoId, byte const& newServoId)
 {
     if (oldServoId >= 0xFE || newServoId >= 0xFE)
@@ -95,7 +101,7 @@ bool STSServoDriver::setId(byte const& oldServoId, byte const& newServoId)
 
 int STSServoDriver::getCurrentPosition(byte const& servoId)
 {
-    int16_t pos = readTwoBytesRegister(servoId, STS::registers::CURRENT_POSITION);
+    int16_t pos = convertFeetechToSigned( readTwoBytesRegister(servoId, STS::registers::CURRENT_POSITION) );
     return pos;
 }
 

@@ -195,6 +195,8 @@ class STSServoDriver
         /// \return Register value, 0 on failure.
         int16_t convertToSigned(int val);
 
+        int16_t convertFeetechToSigned(int val);
+
         /// \brief Clear internal device error.
         // void clearError();
 
