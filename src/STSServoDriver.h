@@ -63,6 +63,15 @@
         byte const CURRENT_CURRENT         = 0x45;
     };
 
+    namespace STS::version {
+        typedef struct {
+            uint8_t firmwareMajor;
+            uint8_t firmwareMinor;
+            uint8_t servoMajor;
+            uint8_t servoMinor;
+        } version_t;
+    }
+    
     namespace STS::mode
     {
         byte const POSITION   = 0x00;
@@ -87,6 +96,14 @@ class STSServoDriver
         /// \param[in] servoId ID of the servo
         /// \return True if servo responded to ping
         bool ping(byte const& servoId);
+
+        /// \brief return version of servo
+        /// \brief MSB : FW_MAJOR - FW-MINOR - SERVO_MAJOR - LSB : SERVO_MINOR
+        /// \note If the desired ID is already taken, this function does nothing and returns false.
+        /// \param[in] oldServoId old servo ID
+        /// \param[in] newServoId new servo ID
+        /// \return True if servo could successfully change ID
+        STS::version::version_t version(byte const& servoId);
 
         /// \brief Change the ID of a servo.
         /// \note If the desired ID is already taken, this function does nothing and returns false.

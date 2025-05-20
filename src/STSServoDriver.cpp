@@ -50,6 +50,20 @@ bool STSServoDriver::init(byte const& dirPin, HardwareSerial *serialPort)
     return false;
 }
 
+STS::version::version_t STSServoDriver::version(byte const& servoId) {
+    STS::version::version_t res = {0};
+    uint32_t *result = (uint32_t *)&res;
+    const uint8_t regToRead[] = {
+        STS::registers::FIRMWARE_MAJOR,
+        STS::registers::FIRMWARE_MINOR,
+        STS::registers::SERVO_MAJOR,
+        STS::registers::SERVO_MINOR
+    };
+    for( uint8_t i=0 ; i<4 ; i++ ) {
+        *result = (*result << 8) | readRegister(servoId, regToRead[i] );
+    }
+    return res;
+}
 
 bool STSServoDriver::ping(byte const& servoId)
 {
