@@ -97,8 +97,7 @@ class STSServoDriver
         /// \return True if servo responded to ping
         bool ping(byte const& servoId);
 
-        /// \brief return version of servo
-        /// \brief MSB : FW_MAJOR - FW-MINOR - SERVO_MAJOR - LSB : SERVO_MINOR
+        /// \brief return a struct version_t about the servo
         /// \note If the desired ID is already taken, this function does nothing and returns false.
         /// \param[in] oldServoId old servo ID
         /// \param[in] newServoId new servo ID
