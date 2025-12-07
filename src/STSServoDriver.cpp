@@ -94,6 +94,22 @@ int16_t STSServoDriver::convertFeetechToSigned(int val) {
     return int16_t(val);
 }
 
+bool STSServoDriver::setBaudrate(byte const& servoId, byte const& newBaudrate)
+{
+    if (newBaudrate > 0x07 )
+        return false;
+    // Unlock EEPROM
+    if (!writeRegister(servoId, STS::registers::WRITE_LOCK, 0))
+        return false;
+    // Write new ID
+    if (!writeRegister(servoId, STS::registers::BAUDRATE, newBaudrate))
+        return false;
+    // Lock EEPROM
+    if (!writeRegister(servoId, STS::registers::WRITE_LOCK, 1))
+      return false;
+    return true;
+}
+
 bool STSServoDriver::setId(byte const& oldServoId, byte const& newServoId)
 {
     if (oldServoId >= 0xFE || newServoId >= 0xFE)
