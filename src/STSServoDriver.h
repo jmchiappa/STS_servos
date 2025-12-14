@@ -201,7 +201,6 @@ class STSServoDriver
         /// \param[in] mode::[POSITION, CONTINUOUS, STEPPER]
         /// \return True if write was successful
         bool setOperationMode(byte const& servoId, byte const& mode);
-    private:
 
         /// \brief convert to signed value in accordance to Feetech convention
         /// bit 15 is the sign bit : 0: positive - 1 : negative
@@ -212,6 +211,8 @@ class STSServoDriver
         int16_t convertToSigned(int val);
 
         int16_t convertFeetechToSigned(int val);
+
+    private:
 
         /// \brief Clear internal device error.
         // void clearError();
