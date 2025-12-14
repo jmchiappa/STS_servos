@@ -111,6 +111,12 @@ class STSServoDriver
         /// \return True if servo could successfully change ID
         bool setId(byte const& oldServoId, byte const& newServoId);
 
+        /// \brief Change the baudrate of a servo [0:1Mbd - 7:38,4kbd]
+        /// \param[in] servoId ID of the servo
+        /// \param[in] newBaudrate baudrate number
+        /// \return True if servo could successfully change baudrate
+        bool setBaudrate(byte const& servoId,byte const& newBaudrate);
+
         /// \brief Get current servo position.
         /// \note This function assumes that the amplification factor ANGULAR_RESOLUTION is set to 1.
         /// \param[in] servoId ID of the servo
