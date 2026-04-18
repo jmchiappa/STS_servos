@@ -128,6 +128,17 @@ bool STSServoDriver::setId(byte const& oldServoId, byte const& newServoId)
     return ping(newServoId);
 }
 
+int STSServoDriver::getMaximumTorque(byte const& servoId)
+{
+    return readTwoBytesRegister(servoId, STS::registers::MAXIMUM_TORQUE);
+}
+
+int STSServoDriver::getTorqueLimit(byte const& servoId)
+{
+    int16_t torque = readTwoBytesRegister(servoId, STS::registers::TORQUE_LIMIT);
+    return torque;
+}
+
 
 int STSServoDriver::getCurrentPosition(byte const& servoId)
 {
@@ -142,6 +153,23 @@ int STSServoDriver::getCurrentSpeed(byte const& servoId)
     return vel;
 }
 
+int STSServoDriver::getCurrentLoad(byte const& servoId)
+{
+    int16_t raw = readTwoBytesRegister(servoId, STS::registers::CURRENT_LOAD);
+//   return raw;
+
+    // Extract load magnitude (lower 10 bits)
+    int load = raw & 0x03FF;
+
+    // Extract direction bit (depends on firmware, here assumed 0x0400, but in other models could be 0x0800)
+    int sign = (raw & 0x0400) ? -1 : 1;
+
+    // Apply sign to the load value
+    int signedLoad = sign * load;
+
+    // For the time being, we return only the magnitude (what is actually measured), but the sign could be used to determine the direction of the load (positive or negative).
+    return load;
+}
 
 int STSServoDriver::getCurrentTemperature(byte const& servoId)
 {
@@ -171,6 +199,27 @@ bool STSServoDriver::setTargetPosition(byte const& servoId, int const& position,
 bool STSServoDriver::setTargetVelocity(byte const& servoId, int16_t const& velocity, bool const& asynchronous)
 {
     return writeTwoBytesRegister(servoId, STS::registers::RUNNING_SPEED, convertToSigned(velocity) , asynchronous);
+}
+
+bool STSServoDriver::setMaximumTorque(byte const& servoId, int16_t const& maxTorque, bool const& asynchronous)
+{
+    // Unlock EEPROM
+    if (!writeRegister(servoId, STS::registers::WRITE_LOCK, 0))
+        return false;
+    
+    // Write new maximum torque
+    if(!writeTwoBytesRegister(servoId, STS::registers::MAXIMUM_TORQUE, convertToSigned(maxTorque), asynchronous))
+        return false;
+
+    // Lock EEPROM
+    if (!writeRegister(servoId, STS::registers::WRITE_LOCK, 1))
+        return false;
+    return true;
+}
+
+bool STSServoDriver::setTorqueLimit(byte const& servoId, int16_t const& torque, bool const& asynchronous)
+{
+    return writeTwoBytesRegister(servoId, STS::registers::TORQUE_LIMIT, convertToSigned(torque), asynchronous);
 }
 
 bool STSServoDriver::setPositionCorrection(byte const& servoId, int16_t const& correction, bool const& asynchronous)

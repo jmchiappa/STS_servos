@@ -54,7 +54,7 @@
         byte const WRITE_LOCK              = 0x37;
         byte const CURRENT_POSITION        = 0x38;
         byte const CURRENT_SPEED           = 0x3A;
-        byte const CURRENT_DRIVE_VOLTAGE   = 0x3C;
+        byte const CURRENT_LOAD            = 0x3C;
         byte const CURRENT_VOLTAGE         = 0x3E;
         byte const CURRENT_TEMPERATURE     = 0x3F;
         byte const ASYNCHRONOUS_WRITE_ST   = 0x40;
@@ -119,6 +119,16 @@ class STSServoDriver
         /// \return True if servo could successfully change baudrate
         bool setBaudrate(byte const& servoId,byte const& newBaudrate);
 
+        /// \brief Get maximum servo torque.
+        /// \param[in] servoId ID of the servo
+        /// \return Maximum torque, 0 to 1000, where 1000 means 100% of the maximum locked torque of the device.
+        int getMaximumTorque(byte const& servoId);
+
+        /// \brief Get current servo torque limit.
+        /// \param[in] servoId ID of the servo
+        /// \return Torque limit, in 0.1%. ~1000 means that the motor is driven at normal nominal torque, in either direction.
+        int getTorqueLimit(byte const& servoId);
+
         /// \brief Get current servo position.
         /// \note This function assumes that the amplification factor ANGULAR_RESOLUTION is set to 1.
         /// \param[in] servoId ID of the servo
@@ -130,6 +140,12 @@ class STSServoDriver
         /// \param[in] servoId ID of the servo
         /// \return Speed, in counts/s. 0 on failure.
         int getCurrentSpeed(byte const& servoId);
+
+        /// \brief Get current servo load.
+        /// \note Voltage duty cycle of current control output drive motor.
+        /// \param[in] servoId ID of the servo
+        /// \return Load, in 0.1%. ~1000 means that the motor is driven at normal nominal load, in either direction.
+        int getCurrentLoad(byte const& servoId);
 
         /// \brief Get current servo temperature.
         /// \param[in] servoId ID of the servo
@@ -161,6 +177,22 @@ class STSServoDriver
         /// \param[in] asynchronous If set, write is asynchronous (ACTION must be send to activate)
         /// \return True on success, false otherwise.
         bool setTargetVelocity(byte const& servoId, int16_t const& velocity, bool const& asynchronous = false);
+
+        /// \brief Set target servo maximum torque limit.
+        /// \note The initial value of power on is assigned by the maximum torque (0x10), which can be modified by the user to control the output of the maximum torque. The value of the torque limit is 0~1000, which corresponds to 0~100% of the maximum torque. For example, if the maximum torque is set to 1.5Nm, and the torque limit is set to 500, then the output torque will be limited to 0.75Nm.
+        /// \param[in] servoId ID of the servo
+        /// \param[in] maxTorque Maximum torque limit.  Set the maximum output torque limit of the servo, and set 1000 = 100% * device maximum locked torque.
+        /// \param[in] asynchronous If set, write is asynchronous (ACTION must be send to activate)
+        /// \return True on success, false otherwise.
+        bool setMaximumTorque(byte const& servoId, int16_t const& maxTorque, bool const& asynchronous = false);
+
+        /// \brief Set target servo running torque limit.
+        /// \note The initial value of power on is assigned by the maximum torque (0x10), which can be modified by the user to control the output of the maximum torque. The value of the torque limit is 0~1000, which corresponds to 0~100% of the maximum torque. For example, if the maximum torque is set to 1.5Nm, and the torque limit is set to 500, then the output torque will be limited to 0.75Nm.
+        /// \param[in] servoId ID of the servo
+        /// \param[in] torque Torque limit.  The value of the torque limit is 0~1000, which corresponds to 0~100% of the maximum torque (register 0x10).
+        /// \param[in] asynchronous If set, write is asynchronous (ACTION must be send to activate)
+        /// \return True on success, false otherwise.
+        bool setTorqueLimit(byte const& servoId, int16_t const& torque, bool const& asynchronous = false);
 
         bool setPositionCorrection(byte const& servoId, int16_t const& correction, bool const& asynchronous);
         
