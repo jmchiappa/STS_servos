@@ -301,7 +301,7 @@ int STSServoDriver::sendMessage(byte const& servoId,
     if(dirPin_ != NC)
         digitalWrite(dirPin_, LOW);
     // Give time for the message to be processed.
-    delayMicroseconds(500);
+    delay(1);
     return ret;
 }
 
@@ -385,7 +385,7 @@ int STSServoDriver::readRegisters(byte const& servoId,
 
     for (int i = 0; i < readLength; i++)
         outputBuffer[i] = result[i + 1];
-    delayMicroseconds(500);
+    delay(1);
     return 0;
 }
 
