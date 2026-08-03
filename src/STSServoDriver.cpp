@@ -30,7 +30,7 @@ STSServoDriver::STSServoDriver():
 }
 
 
-bool STSServoDriver::init(byte const& dirPin, HardwareSerial *serialPort)
+bool STSServoDriver::init(byte const& dirPin, SERIAL_PORT *serialPort)
 {
     #ifdef SERIAL_H
     if (serialPort == nullptr)

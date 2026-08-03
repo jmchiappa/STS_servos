@@ -9,6 +9,12 @@
 #ifndef STSSERVO_DRIVER_H
 #define STSSERVO_DRIVER_H
 
+#if defined(STM32_CORE_VERSION) && (STM32_CORE_VERSION  <= 0x020C0000)
+#   define SERIAL_PORT     HardwareSerial
+#else
+#   define SERIAL_PORT     Uart
+#endif
+
 #include <Arduino.h>
 
     namespace STS::registers
@@ -92,7 +98,7 @@ class STSServoDriver
         /// \param serialPort Serial port, default is Serial
         /// \param baudRate Baud rate, default 1Mbps
         /// \returns  True on success (at least one servo responds to ping)
-        bool init(byte const& dirPin, HardwareSerial *serialPort = nullptr);
+        bool init(byte const& dirPin, SERIAL_PORT *serialPort = nullptr);
 
         /// \brief Ping servo
         /// \param[in] servoId ID of the servo
@@ -305,8 +311,7 @@ class STSServoDriver
                             byte const& startRegister,
                             byte const& readLength,
                             byte *outputBuffer);
-
-        HardwareSerial *port_;
+        SERIAL_PORT *port_;
         byte dirPin_;     ///< Direction pin number.
         uint16_t minAngle = 0;
         uint16_t maxAngle = 1;
